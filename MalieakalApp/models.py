@@ -85,12 +85,17 @@ class cart(models.Model):
 
 class checkout(models.Model):
     user = models.ForeignKey(User_Registration, on_delete=models.SET_NULL, null=True, blank=True)
-    item = models.ForeignKey(item, on_delete=models.SET_NULL, null=True, blank=True)
-    qty=models.IntegerField(null=True, blank=True)
-    item_total=models.FloatField(null=True, blank=True)
-    item_price=models.FloatField(null=True, blank=True)
-    item_name = models.CharField(max_length=255,blank=True,null=True)
+    total_amount=models.FloatField(default=0,null=True, blank=True)
     date=models.DateTimeField(null=True, blank=True)
+    profile = models.ForeignKey(Profile_User, on_delete=models.SET_NULL, null=True, blank=True)
+
+
+class checkout_item(models.Model):
+    checkout = models.ForeignKey(checkout, on_delete=models.SET_NULL, null=True, blank=True)
+    item = models.ForeignKey(item, on_delete=models.SET_NULL, null=True, blank=True)
+    item_name= models.CharField(max_length=255,blank=True,null=True)
+    qty=models.IntegerField(null=True, blank=True)
+    item_price=models.FloatField(null=True, blank=True)
 
 
 class offer_zone(models.Model):

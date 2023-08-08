@@ -367,7 +367,7 @@ def admin_itemlist(request):
 def category_management(request):
     return render(request, 'admin/ad_category_management.html')
 
-# #######################admin add staff #####################
+
 def add_staff(request):
     if request.method == "POST":
         username = request.POST.get('username',None)
@@ -398,7 +398,7 @@ def add_staff(request):
         return redirect ("staff_list")
     return render(request, "admin/admin_addstaff.html")
 
-# ######################admin staff list####################
+
 def staff_list_view(request):
     staff_members = User_Registration.objects.filter(role='user1')
     return render(request, 'admin/admin_stafflist.html', {'staff_members': staff_members})
@@ -468,7 +468,7 @@ def ad_offer_management(request):
 def ad_offerlist(request):
     offerlist = offer_zone.objects.all()
     return render(request, 'admin/admin_offerlist.html', {'offerlist': offerlist})
-# ############################staff offer edit ###############
+
 def ad_edit_offer(request,id):
 
     if request.method == "POST":
@@ -489,12 +489,28 @@ def ad_edit_offer(request,id):
         return redirect ("ad_offerlist")
     return redirect ("ad_offerlist")
 
-
-########################## staff offer delete###############
 def ad_delete_offer(request,id):
     form = offer_zone.objects.get(id=id)
     form.delete()
     return redirect ("ad_offerlist")
+
+def ad_view_order(request):
+    chk=checkout.objects.all().order_by("-id")
+    chk_item=checkout_item.objects.all().order_by("-id")
+    context={
+        "chk":chk,
+        "chk_item":chk_item,
+
+    }
+    return render(request,'admin/ad_view_order.html',context)
+
+def ad_delete_check(request,id):
+        chk=checkout.objects.get(id=id)
+        chk_item=checkout_item.objects.filter(checkout_id=id)
+        chk_item.delete()
+        chk.delete()
+        return redirect('ad_view_order')
+
 ############################################################# <<<<<<<<<< STAFF MODULE >>>>>>>>>>>>>>
 def staff_base(request):
     ids=request.session['userid']
@@ -561,7 +577,7 @@ def new_module(request):
 
     return render(request,'staff/new_item_add.html',context)
 
-# <<<<<<<<<< for Editing item >>>>>>>>>>>>>>
+
 
 def new_module_edit(request, item_id):
     item_instance = get_object_or_404(item, pk=item_id)
@@ -599,7 +615,7 @@ def new_module_edit(request, item_id):
         return redirect('staff_home')
 
     return render(request, 'staff/new_item_edit.html', context)
-#################################
+
 def delete_item(request,id):
     d1=item.objects.get(id=id)
     d1.delete()
@@ -1137,7 +1153,14 @@ def send_receipt(request):
     pro=Profile_User.objects.get(user=ids)
     if request.method =="POST":
         total_amount = request.POST.get('total_amount')
-       
+
+        chk=checkout()
+        chk.user = usr
+        chk.profile = pro
+
+        chk.total_amount=total_amount
+        chk.date=datetime.now()
+        chk.save()
         item_id =request.POST.getlist('item_id[]') 
         qty =request.POST.getlist('qty[]') 
 
@@ -1149,7 +1172,7 @@ def send_receipt(request):
                 itm=item.objects.get(id=ele[0])
                 itm.buying_count=int(itm.buying_count+1)
                 itm.save()
-                created = checkout.objects.create(user=usr,item=itm,qty=ele[1],item_total=int(ele[1])*int(itm.price),item_name=itm.name,item_price=itm.price,date=date.today())
+                created = checkout_item.objects.create(item=itm,qty=ele[1],item_name=itm.name,item_price=itm.offer_price, checkout=chk)
 
         chk_item=checkout.objects.filter(date=date.today()).order_by('-id')[:len(item_id)]
       
@@ -1176,6 +1199,7 @@ def send_receipt(request):
     
         return redirect("cart_checkout")
     return redirect("cart_checkout")
+
 
 def delete_cart(request,id):
     ids=request.session['userid']

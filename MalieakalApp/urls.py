@@ -37,6 +37,9 @@ urlpatterns = [
     path('ad_edit_offer/<int:id>', views.ad_edit_offer, name='ad_edit_offer'),
     path('ad_delete_offer/<int:id>', views.ad_delete_offer, name='ad_delete_offer'),
     path('ad_offer_management/', views.ad_offer_management, name='ad_offer_management'),
+    path('ad_view_order/', views.ad_view_order, name='ad_view_order'),
+    path('ad_delete_check/<int:id>', views.ad_delete_check, name='ad_delete_check'),
+
 
     ############################################################ <<<<<<<<< Staff MODULE >>>>>>>>>>>>>>>>>
   

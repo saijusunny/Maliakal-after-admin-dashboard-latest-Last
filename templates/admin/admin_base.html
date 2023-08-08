@@ -68,8 +68,8 @@
                                 <span>Admin</span>
                             </div>
                         </div>
-                        <a href="#" id="profile-dropdown" data-bs-toggle="dropdown"><i
-                                class="mdi mdi-dots-vertical"></i></a>
+                        <!-- <a href="#" id="profile-dropdown" data-bs-toggle="dropdown"><i
+                                class="mdi mdi-dots-vertical"></i></a> -->
                         <div class="dropdown-menu dropdown-menu-right sidebar-dropdown preview-list"
                             aria-labelledby="profile-dropdown">
                             <a href="" class="dropdown-item preview-item">
@@ -101,14 +101,7 @@
                 <li class="nav-item nav-category">
                     <span class="nav-link">Navigation</span>
                 </li>
-                <li class="nav-item menu-items">
-                    <a class="nav-link" href="">
-                        <span class="menu-icon">
-                            <i class="mdi mdi-file-document-box"></i>
-                        </span>
-                        <span class="menu-title">Profile</span>
-                    </a>
-                </li>
+                
                <li class="nav-item menu-items">
                     <a class="nav-link" href="{% url 'admin_home'%}">
                         <span class="menu-icon">
@@ -152,7 +145,15 @@
                 </span>
                 <span class="menu-title">Offer Management</span>
             </a>
-        </li>
+            </li>
+            <li class="nav-item menu-items">
+                <a class="nav-link" href="{% url 'ad_view_order'%}">
+                    <span class="menu-icon">
+                        <i class="mdi mdi-file-document-box"></i>
+                    </span>
+                    <span class="menu-title">Order Management</span>
+                </a>
+            </li>
                
             </ul>
         </nav>
@@ -162,7 +163,7 @@
             <nav class="navbar p-0 fixed-top d-flex flex-row">
                 <div class="navbar-brand-wrapper d-flex d-lg-none align-items-center justify-content-center">
                     <a class="sidebar-brand brand-logo-mini text-light text-decoration-none" href="#">
-                        <p style="color: white; opacity: 1; font-size: 35px;margin-top: 3vh;padding-left: 100px;">ALTOS
+                        <p style="color: white; opacity: 1; font-size: 35px;margin-top: 3vh;padding-left: 100px;">Malieakal
                         </p>
                     </a>
                 </div>
@@ -177,7 +178,7 @@
                             <a class="nav-link" id="profileDropdown" href="#" data-bs-toggle="dropdown">
                                 <div class="navbar-profile">
                                     <img class="img-xs rounded-circle" src="{% static 'images\logo\icon.png'%}" alt="">
-                                    <p class="mb-0 d-none d-sm-block navbar-profile-name">{{usr.fullname}}</p>
+                                    <p class="mb-0 d-none d-sm-block navbar-profile-name">Admin</p>
                                     <i class="mdi mdi-menu-down d-none d-sm-block"></i>
                                 </div>
                             </a>
