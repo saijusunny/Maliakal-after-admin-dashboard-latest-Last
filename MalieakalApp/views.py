@@ -23,7 +23,7 @@ import string
 from django.http import HttpResponse
 from django.http import JsonResponse
 from datetime import datetime,date, timedelta
-# import pywhatkit
+import pywhatkit
 ######################################################################### <<<<<<<<<< LANDING MODULE >>>>>>>>>>>>>>
 
 def ind(request):
@@ -1174,21 +1174,21 @@ def send_receipt(request):
                 itm.save()
                 created = checkout_item.objects.create(item=itm,qty=ele[1],item_name=itm.name,item_price=itm.offer_price, checkout=chk)
 
-        chk_item=checkout.objects.filter(date=date.today()).order_by('-id')[:len(item_id)]
+        chk_item=checkout_item.objects.filter(checkout_id=chk)
       
         lst=""
         for i in chk_item:
-            rcp="\n\nItem : "+str(i.item_name)+'\nAmount : '+str(i.item_price)+' * '+str(i.qty)+' = '+str(i.item_total)
+            rcp="\n\nItem : "+str(i.item_name)+'\nAmount : '+str(i.item_price)+' * '+str(i.qty)+' = '+str(i.item_price)
             lst+=rcp
      
         tot="\n\nTotal Amount : "+str(total_amount)
         
         message = 'Greetings from Malieakal\n\nReciept,\n\nName :'+str(usr.name)+str(usr.lastname)+'\nAddress :'+str(pro.address)+'\n\n'+str(lst)+str(tot)
       
-        # pywhatkit.sendwhatmsg_instantly(
-        #     phone_no="+918848937577", 
-        #     message=""+str(message),
-        # )
+        pywhatkit.sendwhatmsg_instantly(
+            phone_no="+918848937577", 
+            message=""+str(message),
+        )
      
         messages.error(request, 'Purchase Success Full')
         

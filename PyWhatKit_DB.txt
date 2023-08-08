@@ -33,3 +33,8 @@ Time: 11:39
 Phone Number: +918848937577
 Message: Greetings from MalieakalReciept,Name :SaijuSunnyAddress :Thumpunkal (H), Chottanikkara (Po), Kanayannoor, ErnakulamItem : mobileAmount : 200.0 * 2 = 400.0Total Amount : 400.00
 --------------------
+Date: 8/8/2023
+Time: 19:4
+Phone Number: +918848937577
+Message: Greetings from MalieakalReciept,Name :SaijuSunnyAddress :Thumpunkal (H), Chottanikkara (Po), Kanayannoor, ErnakulamItem : mobileAmount : 100.0 * 2 = 100.0Total Amount : 200.00
+--------------------
