@@ -1,4 +1,4 @@
-{% extends 'admin/admin_base.html' %}
+{% extends 'staff/staff_base.html' %}
 {% load static %}
 {% block content %}
 <div class="row pt-3" style="background-color: black;">
@@ -58,8 +58,7 @@
      
                 <td class="action-buttons">
                     <a href="" class="btn btn-success" data-toggle="modal" data-target="#dis{{staff_member.id}}"> Edit</a>
-                    <a href="{% url 'delete_user' staff_member.id%}"  onclick="return confirm('Are you sure, you want to delete it?')" class="btn btn-danger"> Delete</a><br><br>
-                    <!-- <a href="{% url 'render_user_pdf' staff_member.id%}" class="btn btn-primary"> Download PDF</a> -->
+                    <a href="{% url 'staff_delete_user' staff_member.id%}"  onclick="return confirm('Are you sure, you want to delete it?')" class="btn btn-danger"> Delete</a><br><br>
                 
                 </td>
                 </tr>
@@ -73,7 +72,7 @@
   </div>
 
   {%for staff_member in staff_members%}
-  <form method="post" action="{% url 'edit_user' staff_member.id%}">
+  <form method="post" action="{% url 'staff_edit_user' staff_member.id%}">
 
   <div class="rowmt-5 modal fade" id="dis{{staff_member.id}}">
     <div class="modal-dialog bd-example-modal-xl modal-dialog-centered" role="document" tabindex="-1" role="dialog"
@@ -132,26 +131,6 @@
                                 <input type="text" id="password" name="password" required class="form-control text-light" value="{{staff_member.password}}">
                                 
                             </div>
-
-                            <div class="form-group">
-                              <label for="password">Status :</label>
-                              <select name="status" id="" class="form-control text-light">
-                                {% if staff_member.status == "active" %}
-                                  <option value="active" selected>Active</option>
-                                {%else%}
-                                  <option value="active">Active</option>
-                                {%endif%}
-
-                                {% if staff_member.status == "deactive" %}
-                                  <option value="deactive" selected>Deactivate</option>
-                                {%else%}
-                                  <option value="deactive">Deactivate</option> 
-                                {%endif%}
-                                  
-                              </select>
-                              
-                              
-                            </div>
                             
                             
                     </div>
@@ -182,7 +161,7 @@
           </button>
           <div class="text-info" style="font-size: 20px;font-weight: 600;">Filter By Date</div>
 
-          <form action="{% url 'export_user_excel'%}" method="POST" enctype="multipart/form-data">
+           <form action="{% url 'export_user_excel'%}" method="POST" enctype="multipart/form-data">
             {% csrf_token %} 
 
             <div class="row mt-5">

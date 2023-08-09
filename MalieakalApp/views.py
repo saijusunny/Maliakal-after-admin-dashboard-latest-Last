@@ -75,7 +75,7 @@ def login_main(request):
                     return redirect('profile_staff_creation')
                 
                 
-            elif User_Registration.objects.filter(username=request.POST['username'], password=request.POST['password'],role="user2").exists():
+            elif User_Registration.objects.filter(username=request.POST['username'], password=request.POST['password'],role="user2", status="active").exists():
                 member = User_Registration.objects.get(username=request.POST['username'],password=request.POST['password'])
                 request.session['userid'] = member.id
                 if Profile_User.objects.filter(user_id=member.id).exists():
@@ -536,6 +536,8 @@ def edit_user(request,id):
        
         form.username = request.POST.get('username',None)
         form.password = request.POST.get('password',None)
+        form.status = request.POST.get('status',None)
+        
         form.save()
    
         
@@ -626,7 +628,8 @@ def staff_home(request):
     ids=request.session['userid']
     usr=Profile_User.objects.get(user=ids)
     items = item.objects.all()
-    return render(request, 'staff/staff_home.html',{'items':items,'user':usr,})
+    banner= bannerads.objects.all().last()
+    return render(request, 'staff/staff_home.html',{'items':items,'user':usr,'banner':banner})
 
 def new_module(request):
     ids=request.session['userid']
@@ -642,9 +645,10 @@ def new_module(request):
 
         title = form_data.get('title', None)
         price = form_data.get('price', None)
-        offer = form_data.get('offer_percentage', None)
 
-        offer_price = form_data.get('offer_price', None)
+        
+        offer_percentage = form_data.get('offer_percentage', None)
+        offer_prices = form_data.get('offer_price', None)
         image = request.FILES.get('image', None)
         category_id = form_data.get('categories', None)
         under_category = form_data.get('under_category', None)
@@ -659,8 +663,8 @@ def new_module(request):
             name = title,
             price = price,
             buying_count = 0,
-            offer = offer,
-            offer_price=offer_price,
+            offer = offer_percentage,
+            offer_price=offer_prices,
             image = image,
             under_category = under_category,
             title_description = title_description,
@@ -674,15 +678,27 @@ def new_module(request):
         'user':usr,
     }
 
-    return render(request,'staff/new_item_add.html',context)
-
-
-
-def new_module_edit(request, item_id):
-    item_instance = get_object_or_404(item, pk=item_id)
-    item_categories = category.objects.all()
+    return render(request,'staff/new_item_add.html',context,)
+#  ###############staff item list##################
+def staff_itemlist(request):
     ids=request.session['userid']
     usr=Profile_User.objects.get(user=ids)
+    item_categories = category.objects.all()
+    under_choices = (
+    ("Home Appliance", "Home Appliance"),
+    ("Electronics", "Electronics"),
+    ("Furniture", "Furniture"),
+    )
+    items = item.objects.all()
+    return render(request, 'staff/staff_itemlist.html',{'items':items,'item_categories':item_categories,
+        'under_choices':under_choices,'user':usr})
+# ##############################staff item edit###########################
+def staff_itemedit(request, item_id):
+    ids=request.session['userid']
+    usr=Profile_User.objects.get(user=ids)
+
+    item_instance = get_object_or_404(item, pk=item_id)
+    item_categories = category.objects.all()
     under_choices = (
         ("Home Appliance", "Home Appliance"),
         ("Electronics", "Electronics"),
@@ -693,7 +709,6 @@ def new_module_edit(request, item_id):
         'item_instance': item_instance,
         'item_categories': item_categories,
         'under_choices': under_choices,
-        'user':usr,
     }
     if request.method == 'POST':
         form_data = request.POST.dict()
@@ -701,7 +716,12 @@ def new_module_edit(request, item_id):
         item_instance.price = form_data.get('price', '')
         item_instance.offer = form_data.get('offer_percentage', '')
         item_instance.offer_price = form_data.get('offer_price', '')
-        item_instance.image = request.FILES.get('image', item_instance.image)
+        
+        if request.POST.get('image',None) == "":
+            item_instance.image = item_instance.image
+        else:
+            item_instance.image=request.FILES.get('image',None)
+
         category_id = form_data.get('categories', None)
         if category_id:
             category_instance = get_object_or_404(category, pk=category_id)
@@ -711,10 +731,113 @@ def new_module_edit(request, item_id):
         item_instance.description = form_data.get('description', '')
 
         item_instance.save()
+        return redirect('staff_itemlist')
+
+    return render(request, 'staff/staff_itemlist.html', context,{'user':usr})
+
+# ##############################staff item delete###########################
+def staff_itemdelete(request,item_id):
+    d1=item.objects.get(id=item_id)
+    d1.delete()
+    return redirect('staff_itemlist')
+
+
+    
+
+# ######################admin staff list####################
+def staff_list_view(request):
+    ids=request.session['userid']
+    usr=Profile_User.objects.get(user=ids)
+    staff_members = User_Registration.objects.filter(role='user1')
+    return render(request, 'staff/admin_offerlist.html', {'staff_members': staff_members,'user':usr})
+# ##################offer add#############
+def staff_new_offer(request):
+        ids=request.session['userid']
+        usr=Profile_User.objects.get(user=ids)
+        if request.method == 'POST':
+            image = request.FILES.get('image')
+            title = request.POST["title"]
+            
+            price = request.POST["price"]
+            offer = request.POST["offer_percentage"]
+            offer_price =  request.POST["offer_price"]
+            offer_zone_instance = offer_zone(
+                image = image,
+                title = title ,
+                
+                price = price ,
+                offer = offer ,
+                offer_price=offer_price,
+            )
+            offer_zone_instance.save()
+            return redirect('staff_home')
+
+        return render(request,'staff/staff_offer.html',{'user':usr})
+# ########################staff offer list###############
+def staffofferlist(request):
+    ids=request.session['userid']
+    usr=Profile_User.objects.get(user=ids)
+
+    offerlist = offer_zone.objects.all()
+    return render(request, 'staff/staff_offerlist.html', {'offerlist': offerlist,'user':usr})
+# ############################staff offer edit ###############
+def edit_offer(request,id):
+
+    if request.method == "POST":
+        form = offer_zone.objects.get(id=id)
+        if request.POST.get('image',None)=="":
+            form.image = form.image
+        else:
+            form.image = request.FILES.get('image',None)
+        form.title = request.POST.get('title',None)
+        form.description = request.POST.get('description',None)
+        form.price = request.POST.get('price',None)
+        form.offer = request.POST.get('offer',None)
+        form.offer_rice = request.POST.get('offer_price',None)
+        
+        form.save()       
+        return redirect ("staffofferlist")
+    return redirect ("staffofferlist")
+
+
+########################## staff offer delete###############
+def delete_offer(request,id):
+    form = offer_zone.objects.get(id=id)
+    form.delete()
+    return redirect ("staffofferlist")
+
+# ################staff Cateory #######################
+def staff_categorylist(request):
+    ids=request.session['userid']
+    usr=Profile_User.objects.get(user=ids)
+    cat = category.objects.all()
+    return render(request, 'staff/staff_categlist.html',{'cat':cat,'user':usr})
+# ################staff Cateory edit #######################
+def edit_staffcateg(request,id):
+     if request.method == 'POST':
+        cat=category.objects.get(id=id)
+        
+        cat.category_name = request.POST.get('category_name',None)
+        if request.POST.get('category_image',None) == "":
+            cat.image=cat.image
+        else:
+            cat.image = request.FILES.get('category_image',None)
+       
+        cat.save()
         return redirect('staff_home')
 
-    return render(request, 'staff/new_item_edit.html', context)
+     return redirect('staff_categorylist(')
+# ################staff Cateory Delete #######################
+def delete_staffcateg(request,id):
+    form = category.objects.get(id=id)
+    form.delete()
+    return redirect ("staff_categorylist")
 
+
+# <<<<<<<<<< for Editing item >>>>>>>>>>>>>>
+
+
+#################################
 def delete_item(request,id):
     d1=item.objects.get(id=id)
     d1.delete()
@@ -760,11 +883,7 @@ def profile_staff_creation(request):
     return render(request,'index/index_staff/profile_staff_creation.html', context)
 
 
-def staff_itemlist(request):
-    ids=request.session['userid']
-    usr=Profile_User.objects.get(user=ids)
-    items = item.objects.all()
-    return render(request, 'staff/staff_itemlist.html',{'items':items,'user':usr,})
+
 
 def staff_upload_images(request):
     ids=request.session['userid']
@@ -787,13 +906,57 @@ def staff_upload_images(request):
             banner_image.save()
 
             messages.success(request, 'Images and labels have been uploaded successfully!')
-            return redirect('upload_images')  # Redirect to the same page to clear the form
+            return redirect('staff_upload_images')  # Redirect to the same page to clear the form
 
     else:
         form = ImageForm()
-    return render(request, 'staff/staff_bannerimg.html', {'form': form,'user':usr,})
+    return render(request, 'admin/staff_bannerimg.html', {'form': form})
+# #################### staff edit banner################
+def edit_banner(request,id):
+    ids=request.session['userid']
+    usr=Profile_User.objects.get(user=ids)
+    banner = bannerads.objects.get(id=id)
+    if request.method == 'POST':
+        form = ImageForm(request.POST, request.FILES)
+        print(request.POST.get('image_1',None))
+        banner_image = bannerads.objects.get(id=id)
+        if request.POST.get('image_1',None) == "":
+            banner_image.banner_image1==banner_image.banner_image1
+        else:
+            banner_image.banner_image1=request.FILES.get('image_1',None)
+        banner_image.banner_title1=request.POST.get('label_1',None)
+        if request.POST.get('image_2',None) == "":
+            banner_image.banner_image2==banner_image.banner_image2
+        else:
+            banner_image.banner_image2=request.FILES.get('image_2',None)
+        
+        banner_image.banner_title2=request.POST.get('label_2',None)
+        if request.POST.get('image_3',None) == "":
+            banner_image.banner_image3==banner_image.banner_image3
+        else:
+            banner_image.banner_image3=request.FILES.get('image_3',None)
+       
+        banner_image.banner_title3=request.POST.get('label_3',None)
+        if request.POST.get('image_4',None) == "":
+            banner_image.banner_image4==banner_image.banner_image4
+        else:
+            banner_image.banner_image4=request.FILES.get('image_4',None)
 
+        banner_image.banner_title4=request.POST.get('label_4',None)
+        if request.POST.get('image_5',None) == "":
+            banner_image.banner_image5==banner_image.banner_image5
+        else:
+            banner_image.banner_image5=request.FILES.get('image_5',None)
 
+        banner_image.banner_title5=request.POST.get('label_5',None)
+        
+        banner_image.save()
+
+        return redirect('staff_home')  # Redirect to the same page to clear the form
+
+    
+    return render(request, 'staff/staff_editbanner.html', {'banner': banner,'user':usr})
+##################################################
 def staff_category(request):
     ids=request.session['userid']
     usr=Profile_User.objects.get(user=ids)
@@ -809,31 +972,67 @@ def staff_category(request):
         categorys.save()
         return redirect('staff_home')
 
-    return render(request,'staff/staff_category.html',{'user':usr,})
+    return render(request,'staff/staff_category.html',{'user':usr})
 
-def staff_new_offer(request):
-        ids=request.session['userid']
-        usr=Profile_User.objects.get(user=ids)
-        if request.method == 'POST':
-            image = request.FILES.get('image')
-            title = request.POST["title"]
-            
-            price = request.POST["price"]
-            offer = request.POST["offer_percentage"]
-            offer_price =  request.POST["offer_price"]
-            offer_zone_instance = offer_zone(
-                image = image,
-                title = title ,
-                
-                price = price ,
-                offer = offer ,
-                offer_price=offer_price,
-            )
-            offer_zone_instance.save()
-            return redirect('staff_home')
+# ##############sraff order##################
+def staff_view_order(request):
+    ids=request.session['userid']
+    usr=Profile_User.objects.get(user=ids)
+    chk=checkout.objects.all().order_by("-id")
+    chk_item=checkout_item.objects.all().order_by("-id")
+    context={
+        "chk":chk,
+        "chk_item":chk_item,
+        'user':usr,
 
-        return render(request,'staff/staff_offer.html',{'user':usr,})
-#######################################logout################### <<<<<<<<<< USER MODULE >>>>>>>>>>>>>>>>
+    }
+    return render(request,'staff/staff_vieworders.html',context)
+
+def staff_delete_check(request,id):
+        chk=checkout.objects.get(id=id)
+        chk_item=checkout_item.objects.filter(checkout_id=id)
+        chk_item.delete()
+        chk.delete()
+        return redirect('staff_view_order')
+# ############staff user management######################
+def staff_user_list_view(request):
+    ids=request.session['userid']
+    usr=Profile_User.objects.get(user=ids)
+
+    staff_members = User_Registration.objects.filter(role='user2')
+    print(staff_members.values())
+    return render(request, 'staff/staff_userview.html', {'staff_members': staff_members,'user':usr})
+
+def staff_edit_user(request,id):
+    ids=request.session['userid']
+    usr=Profile_User.objects.get(user=ids)
+
+    if request.method == "POST":
+        form = User_Registration.objects.get(id=id)
+
+        form.name = request.POST.get('name',None)
+        form.lastname = request.POST.get('lastname',None)
+        form.nickname = request.POST.get('nickname',None)
+        form.gender = request.POST.get('gender',None)
+        form.date_of_birth = request.POST.get('date_of_birth',None)
+        form.phone_number = request.POST.get('phone_number',None)
+        form.email = request.POST.get('email',None)
+       
+        form.username = request.POST.get('username',None)
+        form.password = request.POST.get('password',None)
+        form.save()
+   
+        
+        return redirect ("staff_user_list_view")
+    return redirect ("staff_user_list_view")
+
+def staff_delete_user(request,id):
+    form = User_Registration.objects.get(id=id)
+    pro= Profile_User.objects.get(user_id=id)
+    form.delete()
+    pro.delete()
+    return redirect ("staff_user_list_view")
+########################################################## <<<<<<<<<< USER MODULE >>>>>>>>>>>>>>>>
 
 def base_sub(request):
     ids=request.session['userid']

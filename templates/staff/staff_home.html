@@ -3,20 +3,10 @@
 {% block content %}
 
 <style>
-    body {
-        margin: 0;
-        padding: 0;
-        min-height: 100vh;
-        background: #333;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        font-family: sans-serif;
-        background-color: #f4e3e3;
-    }
+    
 
     .card {
-        background-color: #f4e3e3;
+        background-color: transparent;
         border: none;
         margin: 10px;
         
@@ -39,7 +29,7 @@
         border-radius: 10px;
         display: flex;
         flex-direction: column;
-        align-items: center;
+        align-items: center; /* Center the content vertically */
     }
 
     .container .card .icon {
@@ -126,7 +116,7 @@
         color: #fff;
         font-size: 24px;
         color: #414141;
-        font-family: 'Righteous', cursive;
+        font-family: monospace;
         letter-spacing: 5px;
         text-shadow: 2px 2px 8px #000;
     }
@@ -170,11 +160,10 @@
 </style>
 
 <div class="container">
-    <div class="card">
-        <div class="face face1">
+    <div class="card"style="margin-top: -4rem;" >
+        <div class="face face1" >
             <div class="content">
                 <div class="icon">
-                    <img src="{% static 'images/banner.png' %}" alt="" class="banner">
                     <h2 class="text-light">BANNER MANAGEMENT</h2>
                 </div>
             </div>
@@ -182,15 +171,19 @@
         <div class="face face2" >
             <div class="content">
                 <h3>
-                  <a href="{% url 'staff_upload_images' %}" class=""><button type="button" class="btn btn-danger">Add Banner</button></a>                </h3>
+                    {%if banner%}
+                    <a href="{% url 'edit_banner' banner.id %}" class=""><button type="button" class="btn btn-dark">Edit Banner</button></a>
+                    {%else%}
+                    <a href="{% url 'staff_upload_images' %}" class=""><button type="button" class="btn btn-dark">Add Banner</button></a>
+                    {%endif%}
+                </h3>
             </div>
         </div>
     </div>
-    <div class="card">
+    <div class="card" style="margin-top: -4rem;">
         <div class="face face1">
             <div class="content">
                 <div class="icon">
-                    <img src="{% static 'images/product.png' %}" alt="" class="category">
                     <h2 class="text-light mt-2">PRODUCT MANAGEMENT</h2>
                 </div>
             </div>
@@ -198,21 +191,20 @@
         <div class="face face2">
             <div class="content">
                 <h3>
-                  <a href="{% url 'new_module' %}" class="center-vertical"><button type="button" class="btn btn-danger center-vertical">Add Product</button></a>
+                  <a href="{% url 'new_module' %}" class="center-vertical"><button type="button" class="btn btn-dark center-vertical ">Add Product</button></a>
                 </h3>
                 <p>
-                  <a href="{% url 'staff_itemlist' %}" class="center-vertical"><button type="button" class="btn btn-danger center-vertical mt-2">Product List</button></a>
-                     
+                  <a href="{% url 'staff_itemlist' %}" class="center-vertical"><button type="button" class="btn btn-dark center-vertical mt-2 mx-auto">Product List</button></a>
+              
                 </p>
                 </div>
         </div>
     </div>
     
-    <div class="card" >
+    <div class="card" style="margin-top: -4rem;">
         <div class="face face1" >
             <div class="content">
-                <div class="icon" style="background-color: #581845 ;">
-                    <img src="{% static 'images/category.png' %}" alt="" class="category">
+                <div class="icon" style="background-color: #CB7BC5 ;">
                     <h2 class="text-light mt-2">CATEGORY MANAGEMENT</h2>
                 </div>
             </div>
@@ -220,29 +212,69 @@
         <div class="face face2">
             <div class="content">
                 <h3>
-                    <a href="{% url 'staff_category'%}" class=""><button type="button" class="btn btn-danger">Add Category</button></a>               
+                  <a href="{% url 'staff_category'%}" class=""><button type="button" class="btn btn-dark">Add Category</button></a>                
+                </h3>
+                <p>
+                    <a href="{% url 'staff_categorylist' %}" class="center-vertical"><button type="button" class="btn btn-dark center-vertical mt-2 mx-auto">Category List</button></a>
+                
+                  </p>
+            </div>
+        </div>
+    </div>
+    <div class="card" style="margin-top: -4rem;">
+        <div class="face face1" >
+            <div class="content">
+                <div class="icon" style="background-color: #6C9666 ;">
+                    <h2 class="text-light mt-2">Orders</h2>
+                </div>
+            </div>
+        </div>
+        <div class="face face2">
+            <div class="content">
+                <h3>
+                  <a href="{% url 'staff_view_order'%}" class=""><button type="button" class="btn btn-dark">View Orders</button></a>                
+                </h3>
+                
+            </div>
+        </div>
+    </div>
+    <div class="card" style="margin-top: -4rem;">
+        <div class="face face1" >
+            <div class="content">
+                <div class="icon" style="background-color: #C70039;">
+                    <h2 class="text-light mt-2">User Management</h2>
+                </div>
+            </div>
+        </div>
+        <div class="face face2">
+            <div class="content">
+                <h3>
+                  <a href="{% url 'staff_user_list_view'%}" class=""><button type="button" class="btn btn-dark">View User</button></a>                
+                </h3>
+                
+            </div>
+        </div>
+    </div>
+    <div class="card" style="margin-top: -4rem;">
+        <div class="face face1" >
+            <div class="content">
+                <div class="icon" style="background-color: #FFC300;">
+                    <h2 class="text-light mt-3">OFFER <br>ZONE</h2>
+                </div>
+            </div>
+        </div>
+        <div class="face face2">
+            <div class="content">
+                <h3>
+                  <a href="{% url 'staff_new_offer' %}" class=""><button type="button" class="btn btn-dark">Add Offer</button></a>                
+                </h3>
+                <h3>
+                    <a href="{% url 'staffofferlist' %}" class=""><button type="button" class="btn btn-dark">Offer List</button></a>                </h3>
+
                 </h3>
             </div>
         </div>
     </div>
-
-    <div class="card">
-        <div class="face face1">
-            <div class="content">
-                <div class="icon">
-                    <img src="{% static 'images/banner.png' %}" alt="" class="banner">
-                    <h2 class="text-light">Offer Zone</h2>
-                </div>
-            </div>
-        </div>
-        <div class="face face2" >
-            <div class="content">
-                <h3>
-                  <a href="{% url 'staff_new_offer' %}" class=""><button type="button" class="btn btn-danger">Add Offer Zone</button></a>                </h3>
-            </div>
-        </div>
-    </div>
-   
 </div>
 
 
