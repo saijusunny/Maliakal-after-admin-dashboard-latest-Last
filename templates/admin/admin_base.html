@@ -48,11 +48,11 @@
         <!-- partial:partials/_sidebar.html -->
         <nav class="sidebar sidebar-offcanvas" id="sidebar">
             <div class="sidebar-brand-wrapper d-none d-lg-flex align-items-center justify-content-center fixed-top">
-                <a class="sidebar-brand brand-logo text-light text-decoration-none" href="#">
+                <a class="sidebar-brand brand-logo text-light text-decoration-none" href="{% url 'admin_home'%}">
                     <p style="color: white; opacity: 1; font-size: 35px;margin-top: 3vh;">Malieakal</p>
                 </a>
                 <a class="sidebar-brand brand-logo-mini text-light text-decoration-none" href="#">
-                    <p style="color: white; opacity: 1; font-size: 35px;margin-top: 3vh;">A</p>
+                    <p style="color: white; opacity: 1; font-size: 35px;margin-top: 3vh;"></p>
                 </a>
             </div>
             <ul class="nav">
@@ -152,6 +152,14 @@
                         <i class="mdi mdi-file-document-box"></i>
                     </span>
                     <span class="menu-title">Order Management</span>
+                </a>
+            </li>
+            <li class="nav-item menu-items">
+                <a class="nav-link" href="{% url 'user_list_view'%}">
+                    <span class="menu-icon">
+                        <i class="mdi mdi-file-document-box"></i>
+                    </span>
+                    <span class="menu-title">User Management</span>
                 </a>
             </li>
                

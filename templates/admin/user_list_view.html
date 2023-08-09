@@ -63,7 +63,8 @@
      
                 <td class="action-buttons">
                     <a href="" class="btn btn-success" data-toggle="modal" data-target="#dis{{staff_member.id}}"> Edit</a>
-                    <a href="{% url 'delete_staff' staff_member.id%}"  onclick="return confirm('Are you sure, you want to delete it?')" class="btn btn-danger"> Delete</a>
+                    <a href="{% url 'delete_user' staff_member.id%}"  onclick="return confirm('Are you sure, you want to delete it?')" class="btn btn-danger"> Delete</a><br><br>
+                    <a href="{% url 'render_user_pdf' staff_member.id%}" class="btn btn-primary"> Download PDF</a>
                 
                 </td>
                 </tr>
@@ -77,7 +78,7 @@
   </div>
 
   {%for staff_member in staff_members%}
-  <form method="post" action="{% url 'edit_staff' staff_member.id%}">
+  <form method="post" action="{% url 'edit_user' staff_member.id%}">
 
   <div class="rowmt-5 modal fade" id="dis{{staff_member.id}}">
     <div class="modal-dialog bd-example-modal-xl modal-dialog-centered" role="document" tabindex="-1" role="dialog"

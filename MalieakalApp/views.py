@@ -24,6 +24,9 @@ from django.http import HttpResponse
 from django.http import JsonResponse
 from datetime import datetime,date, timedelta
 import pywhatkit
+
+from xhtml2pdf import pisa
+from django.template.loader import get_template
 ######################################################################### <<<<<<<<<< LANDING MODULE >>>>>>>>>>>>>>
 
 def ind(request):
@@ -190,7 +193,9 @@ def edit_staff(request,id):
 
 def delete_staff(request,id):
     form = User_Registration.objects.get(id=id)
+    pro= Profile_User.objects.get(user_id=id)
     form.delete()
+    pro.delete()
     return redirect ("staff_list")
 
 def upload_images(request):
@@ -510,6 +515,70 @@ def ad_delete_check(request,id):
         chk_item.delete()
         chk.delete()
         return redirect('ad_view_order')
+
+def user_list_view(request):
+    staff_members = User_Registration.objects.filter(role='user2')
+    return render(request, 'admin/user_list_view.html', {'staff_members': staff_members})
+
+def edit_user(request,id):
+
+    if request.method == "POST":
+        form = User_Registration.objects.get(id=id)
+
+        form.name = request.POST.get('name',None)
+        form.lastname = request.POST.get('lastname',None)
+        form.nickname = request.POST.get('nickname',None)
+        form.gender = request.POST.get('gender',None)
+        form.date_of_birth = request.POST.get('date_of_birth',None)
+        form.phone_number = request.POST.get('phone_number',None)
+        form.email = request.POST.get('email',None)
+       
+        form.username = request.POST.get('username',None)
+        form.password = request.POST.get('password',None)
+        form.save()
+   
+        
+        return redirect ("user_list_view")
+    return redirect ("user_list_view")
+
+def delete_user(request,id):
+    form = User_Registration.objects.get(id=id)
+    pro= Profile_User.objects.get(user_id=id)
+    form.delete()
+    pro.delete()
+    return redirect ("user_list_view")
+
+def render_user_pdf(request,id):
+    form = User_Registration.objects.get(id=id)
+    pro= Profile_User.objects.get(user_id=id)
+    
+
+    template_path = 'admin/user_pdf.html'
+    context = {
+        'form': form,
+        'pro':pro,
+       
+    }
+    fname=str(form.name)+str(form.lastname)
+   
+    # Create a Django response object, and specify content_type as pdftemp_creditnote
+    response = HttpResponse(content_type='application/pdf')
+    #response['Content-Disposition'] = 'attachment; filename="certificate.pdf"'
+    response['Content-Disposition'] =f'attachment; filename= {fname}.pdf'
+    # find the template and render it.
+    template = get_template(template_path)
+    html = template.render(context)
+
+    # create a pdf
+    pisa_status = pisa.CreatePDF(
+       html, dest=response)
+    
+
+
+    # if error then show some funy view
+    if pisa_status.err:
+       return HttpResponse('We had some errors <pre>' + html + '</pre>')
+    return response
 
 ############################################################# <<<<<<<<<< STAFF MODULE >>>>>>>>>>>>>>
 def staff_base(request):

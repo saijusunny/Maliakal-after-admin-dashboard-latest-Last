@@ -40,7 +40,10 @@ urlpatterns = [
     path('ad_view_order/', views.ad_view_order, name='ad_view_order'),
     path('ad_delete_check/<int:id>', views.ad_delete_check, name='ad_delete_check'),
 
-
+    path('user_list_view', views.user_list_view, name='user_list_view'),
+    path('edit_user/<int:id>', views.edit_user, name='edit_user'),
+    path('delete_user/<int:id>', views.delete_user, name='delete_user'), 
+    path('render_user_pdf/<int:id>', views.render_user_pdf, name='render_user_pdf'),
     ############################################################ <<<<<<<<< Staff MODULE >>>>>>>>>>>>>>>>>
   
     path('staff_home/',views.staff_home,name='staff_home'),

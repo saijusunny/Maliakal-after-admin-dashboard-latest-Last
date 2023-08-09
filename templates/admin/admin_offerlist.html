@@ -65,7 +65,7 @@
      
                 <td class="action-buttons">
                     <a href="" class="btn btn-success" data-toggle="modal" data-target="#dis{{x.id}}"> Edit</a>
-                    <a href="{% url 'ad_delete_offer' x.id%}"  onclick="confirm('Are You Sure')" class="btn btn-danger"> Delete</a>
+                    <a href="{% url 'ad_delete_offer' x.id%}"  onclick="return confirm('Are you sure, you want to delete it?')" class="btn btn-danger"> Delete</a>
                 
                 </td>
                 </tr>
