@@ -24,7 +24,7 @@ from django.http import HttpResponse
 from django.http import JsonResponse
 from datetime import datetime,date, timedelta
 import pywhatkit
-
+from django.db.models import Q
 from xhtml2pdf import pisa
 from django.template.loader import get_template
 ######################################################################### <<<<<<<<<< LANDING MODULE >>>>>>>>>>>>>>
@@ -46,7 +46,7 @@ def index_search_feature(request):
             # Retrieve the search query entered by the user
             search_query = request.POST['search_query']
             # Filter your model by the search query
-            items = item.objects.filter(name__contains=search_query)
+            items = item.objects.filter(Q(offer_price__contains=search_query) | Q(name__contains=search_query) | Q(under_category__contains=search_query) | Q(title_description__contains=search_query) | Q(description__contains=search_query))
             return render(request, 'index/index_all_item.html', { 'items':items})
         else:
             return redirect('index')
@@ -834,10 +834,12 @@ def user_base(request):
 
 
 def user_registration(request):
-
+    
     if request.method =='POST':
+        
         form = User_RegistrationForm(request.POST)
         if form.is_valid():
+            print("haiiissss")
             email = form.cleaned_data['email']
             if User_Registration.objects.filter(email=email).exists():
                 messages.error(request, 'Email Id already exists')
@@ -845,7 +847,20 @@ def user_registration(request):
             else:
                 user_model=form.save()
             user_id = user_model.pk
+
+            udr=User_Registration.objects.get(id=user_id)
+            digits = string.digits
+            otp = ''.join(random.choices(digits, k=6))
+            subject = "Greetings From Malieakal"
+            message =f'Hi {email},\nYour Email Verification OTP is: {otp}'
+            udr.otp=otp
+            udr.save()
+            recipient = form.cleaned_data['email']    #  recipient =request.POST["inputTagName"]
+            send_mail(subject, message, settings.EMAIL_HOST_USER, [recipient])
+            messages.error(request, 'Otp Send To Given Email id')
+
             return redirect('index_user_confirmation',user_id=user_id)
+        return redirect("user_registration")
     else:
         form = User_RegistrationForm()
         form.initial['role'] = 'user2'
@@ -860,16 +875,21 @@ def index_user_confirmation(request,user_id):
         confirm_password = request.POST['confirm_password']
 
         if password == confirm_password:
-            print("success")
+            
             if User_Registration.objects.filter(username=username).exists():
                 messages.error(request, 'Username already exists')
                 return redirect('index_user_confirmation', user_id=user_id)
             else:
                 artist_object = get_object_or_404(User_Registration, pk=user_id)
-                artist_object.username=username
-                artist_object.password = password
-                artist_object.save()
-                messages.success(request, 'Thank you for registering with us.')
+                otps=request.POST.get('otp')
+                if str(artist_object.otp) == str(otps):
+                    artist_object.username=username
+                    artist_object.password = password
+                    artist_object.save()
+                    messages.success(request, 'Thank you for registering with us.')
+                else:
+                    messages.success(request, 'Invalid OTP')
+                    return redirect('index_user_confirmation',user_id)
                 return redirect('login_main')
         else:
             messages.error(request, ' Password and Confirm Password are not matching. Please verify it.')
@@ -946,7 +966,7 @@ def search_feature(request):
             # Retrieve the search query entered by the user
             search_query = request.POST['search_query']
             # Filter your model by the search query
-            items = item.objects.filter(name__contains=search_query)
+            items = item.objects.filter(Q(offer_price__contains=search_query) | Q(name__contains=search_query) | Q(under_category__contains=search_query) | Q(title_description__contains=search_query) | Q(description__contains=search_query))
             return render(request, 'user/all_item.html', {'user':usr,"crt_cnt":crt_cnt, 'items':items})
         else:
             return redirect('home')

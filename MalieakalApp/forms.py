@@ -39,7 +39,8 @@ class User_RegistrationForm(forms.ModelForm):
                 'lastname': forms.TextInput(attrs={'class': 'form-control item','placeholder':'Lastname'}),
                 'nickname': forms.TextInput(attrs={'class': 'form-control item','placeholder':'Nickname'}),
                 'phone_number': forms.TextInput(attrs={'class': 'form-control item','placeholder':'Phone number','pattern': "^(0|\+91)?(?!6789)[6-9]\d{9}$",
-    'message': "Enter a valid phone number"}),
+                'message': "Enter a valid phone number"}),
+                'otp': forms.HiddenInput(attrs={'class': 'form-control item','placeholder':'Experience', 'value':'0',}),
  
 
                 'email': forms.EmailInput(attrs={'class': 'form-control item','placeholder':'Email','id':'email','pattern':"[a-z0-9._%+\-]+@[a-z0-9.\-]+\.[a-z]{2,}$"}),
