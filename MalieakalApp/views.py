@@ -27,6 +27,7 @@ import pywhatkit
 from django.db.models import Q
 from xhtml2pdf import pisa
 from django.template.loader import get_template
+from openpyxl import Workbook
 ######################################################################### <<<<<<<<<< LANDING MODULE >>>>>>>>>>>>>>
 
 def ind(request):
@@ -580,6 +581,35 @@ def render_user_pdf(request,id):
        return HttpResponse('We had some errors <pre>' + html + '</pre>')
     return response
 
+
+def export_user_excel(request):
+    st_dt=request.POST.get('str_dt')
+    en_dt=request.POST.get('end_dt')
+    prop=Profile_User.objects.filter(joindate__gte=st_dt,joindate__lte=en_dt)
+    # Create an Excel workbook and get the active sheet
+    workbook = Workbook()
+    sheet = workbook.active
+
+    # Add column headers to the Excel sheet
+    headers = ['Reg No.',"Join Date","Name","Email id","ph_no","Address", "Gender", "D.O.B"]  # "Replace with your actual column names
+    sheet.append(headers)
+
+    # Add data rows to the Excel sheet
+    count = 1
+    for item in prop:
+        
+        row = [item.id,item.joindate,str(item.firstname)+" "+str(item.lastname),item.email,item.phonenumber,item.address,item.gender,item.date_of_birth] # Replace with your actual column names
+        sheet.append(row)
+        count+=1
+
+    # Set the response headers for the Excel file
+    response = HttpResponse(content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+    response['Content-Disposition'] = 'attachment; filename=filtered_data.xlsx'
+
+    # Save the Excel workbook to the response
+    workbook.save(response)
+
+    return response
 ############################################################# <<<<<<<<<< STAFF MODULE >>>>>>>>>>>>>>
 def staff_base(request):
     ids=request.session['userid']
@@ -925,7 +955,8 @@ def profile_user_creation(request):
             address=address,
             pro_pic=pro_pics,
             user=usr,
-            secondnumber=secondnumb
+            secondnumber=secondnumb,
+            joindate=date.today()
         )
         profile_artist.save()
 

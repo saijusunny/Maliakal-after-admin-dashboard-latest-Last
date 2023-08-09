@@ -45,7 +45,7 @@ class Profile_User(models.Model):
     date_of_birth = models.DateField(null=True)
     address =  models.TextField(blank=True,null=True)
     pro_pic = models.ImageField(upload_to='images/', default='static/images/logo/icon.png')
-
+    joindate = models.DateField(null=True)
     def __str__(self):
         return f"{self.firstname} {self.lastname}"
 

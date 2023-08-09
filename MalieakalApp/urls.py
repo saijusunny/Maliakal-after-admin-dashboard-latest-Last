@@ -44,6 +44,7 @@ urlpatterns = [
     path('edit_user/<int:id>', views.edit_user, name='edit_user'),
     path('delete_user/<int:id>', views.delete_user, name='delete_user'), 
     path('render_user_pdf/<int:id>', views.render_user_pdf, name='render_user_pdf'),
+    path('export_user_excel/', views.export_user_excel, name='export_user_excel'),
     ############################################################ <<<<<<<<< Staff MODULE >>>>>>>>>>>>>>>>>
   
     path('staff_home/',views.staff_home,name='staff_home'),
@@ -86,4 +87,6 @@ urlpatterns = [
 
     path('search_feature',views.search_feature,name='search_feature'),
     path('index_search_feature',views.index_search_feature,name='index_search_feature'),
+
+    
     ]

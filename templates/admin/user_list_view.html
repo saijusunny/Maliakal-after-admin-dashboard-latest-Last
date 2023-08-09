@@ -2,25 +2,20 @@
 {% load static %}
 {% block content %}
 <div class="row pt-3" style="background-color: black;">
-    <div class="" style="font-size: 20px;font-weight: 600;color:#6C7293;">Staff List</div>
+    <div class="" style="font-size: 20px;font-weight: 600;color:#6C7293;">User List</div>
   </div>
-  <div class="row">
-    <div class="col-sm-12">
-        {% if messages %}
-                    
-        <div class="messages">
-            {% for message in messages %}
-                <div class="alert {{ message.tags }}">{{ message }}</div>
-            {% endfor %}
-        </div>
-        {% endif %}
-    </div>
-  </div>
+  
   <div class="row mt-4">
     <div class="card">
       <div class="card-body">
         <div class="row mt-3 mb-3" >
           <div class="col-sm-12">
+            <div class="row">
+              <div class="col-sm-12" style="text-align: right;">
+                <a href="" data-toggle="modal" data-target="#flt_date"
+                    style="text-decoration: none;"><div class="btn btn-primary">Download Users List</div></a><br><br>
+              </div>
+            </div>
             <div class="row">
               <div class="col-sm-12">
                 <input type="text" class="form-control text-light" id="search" placeholder="Search by Client...">
@@ -64,7 +59,7 @@
                 <td class="action-buttons">
                     <a href="" class="btn btn-success" data-toggle="modal" data-target="#dis{{staff_member.id}}"> Edit</a>
                     <a href="{% url 'delete_user' staff_member.id%}"  onclick="return confirm('Are you sure, you want to delete it?')" class="btn btn-danger"> Delete</a><br><br>
-                    <a href="{% url 'render_user_pdf' staff_member.id%}" class="btn btn-primary"> Download PDF</a>
+                    <!-- <a href="{% url 'render_user_pdf' staff_member.id%}" class="btn btn-primary"> Download PDF</a> -->
                 
                 </td>
                 </tr>
@@ -154,7 +149,61 @@
   </div>
 </form>
 {%endfor%}
-  
+
+<div class="rowmt-5 modal fade" id="flt_date">
+  <div class="modal-dialog bd-example-modal-xl modal-dialog-centered" role="document" tabindex="-1" role="dialog"
+    aria-labelledby="myLargeModalLabel" aria-hidden="true">
+    <div class="modal-content modal-xl" style="background-color: #191c24;">
+      <div class="card ">
+        <div class="card-body">
+          <button type="button" class="close text-light" data-dismiss="modal" aria-label=""
+            style="background-color: #191c24;border:none;float: right;font-size: 20px;">
+            <span aria-hidden="true">&times;</span>
+          </button>
+          <div class="text-info" style="font-size: 20px;font-weight: 600;">Filter By Date</div>
+
+          <form action="{% url 'export_user_excel'%}" method="POST" enctype="multipart/form-data">
+            {% csrf_token %} 
+
+            <div class="row mt-5">
+              
+              <div class="col-md-6 ">
+                  <div>
+                      <label for="">Start Date</label>
+                  </div>
+                  <div>
+                  <input type="date" class="drop form-control ml-3 mt-2 text-light" name="str_dt" style="border:1px solid #6C7293 ;height:70px;"  >
+                  </div>
+
+    
+              </div>
+              <div class="col-md-6 ">
+                  <div>
+                      <label for=""> End Date</label>
+                  </div>
+                  <div>
+                      <input type="date" name="end_dt" class="drop form-control ml-3 mt-2 text-light" style="border:1px solid #6C7293 ;height:70px;"  >
+                  </div>
+
+    
+              </div>
+
+            </div>
+
+            <div class="row mt-4 ">
+              <div class="col-md-12" style="text-align: center;">
+                  
+                      <button type="submit" name="submit" id="alert2" class="btn-primary Search" >Download Excel</button>
+                  
+              </div>
+            </div>
+            
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
   
   <script>
     $(document).ready(function () {
