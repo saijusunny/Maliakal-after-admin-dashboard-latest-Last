@@ -106,6 +106,6 @@ urlpatterns = [
     path('ind',views.ind,name='ind'),
     path('search_feature',views.search_feature,name='search_feature'),
     path('index_search_feature',views.index_search_feature,name='index_search_feature'),
-
-    
+    path('user_profile',views.user_profile,name='user_profile'),
+    path('edit_user_profile/<int:id>',views.edit_user_profile,name='edit_user_profile'),    
     ]

@@ -1527,3 +1527,93 @@ def delete_cart(request,id):
     return redirect("cart_checkout")
   
   
+def user_profile(request):
+    if request.session.has_key('userid'):
+        pass
+    else:
+        return redirect('/')
+    
+
+    ids=request.session['userid']
+    usr=User_Registration.objects.get(id=ids)
+    pro=Profile_User.objects.get(user=ids)
+    crt_cnt=cart.objects.filter(user=ids).count()
+    return render(request, 'user/user_profile.html',{'usr':usr,'pro':pro, 'user':pro,"crt_cnt":crt_cnt})
+
+def edit_user_profile(request,id):
+
+    if request.method == "POST":
+        form = User_Registration.objects.get(id=id)
+        eml=form.email
+        usr_nm=form.username
+        form.name = request.POST.get('name',None)
+        form.lastname = request.POST.get('lastname',None)
+        form.nickname = request.POST.get('nickname',None)
+        form.gender = request.POST.get('gender',None)
+        form.date_of_birth = request.POST.get('date_of_birth',None)
+        form.phone_number = request.POST.get('phone_number',None)
+        form.email = request.POST.get('email',None)
+       
+        form.username = request.POST.get('username',None)
+        if request.POST.get('password',None) == "":
+            form.password == form.password
+        else:
+            if request.POST.get('password',None) == request.POST.get('con_password',None):
+                form.password == request.POST.get('password',None)
+            else:
+                messages.error(request,"Passwords do not match!")
+                return redirect ("user_profile")
+       
+        if str(request.POST.get('email',None)) == str(eml):
+            if str(request.POST.get('username',None)) == str(usr_nm):
+                form.save()
+            else:
+                if User_Registration.objects.filter(username=form.username).exists():
+                    messages.error(request,"Username already exists.")
+                    return redirect ("user_profile")
+                else:
+                        form.save()
+        else: 
+           
+            if User_Registration.objects.filter(email=form.email).exists():
+                messages.error(request,"Email already exists.")
+                return redirect ("user_profile")
+            else:
+                if str(request.POST.get('username',None)) == str(usr_nm):
+                    form.save()
+                else:
+                    if User_Registration.objects.filter(username=form.username).exists():
+                        messages.error(request,"Username already exists.")
+                        return redirect ("user_profile")
+                    else:
+                        form.save()
+                    
+            
+        prop=Profile_User.objects.get(user_id=id)
+        prop.firstname = request.POST.get('name',None)
+        prop.lastname = request.POST.get('lastname',None)
+        prop.gender = request.POST.get('gender',None)
+        prop.date_of_birth = request.POST.get('date_of_birth',None)
+        prop.phonenumber = request.POST.get('phonenumber',None)
+        prop.secondnumber = request.POST.get('second_number',None)
+
+        prop.email = request.POST.get('email',None)
+        prop.address = request.POST.get('address',None)
+        if request.POST.get('image') == "":
+            prop.pro_pic == prop.pro_pic
+
+        else:
+            prop.pro_pic = request.FILES.get('image')
+        
+        prop.save()
+   
+        
+        return redirect ("user_profile")
+    return redirect ("user_profile")
+
+# def delete_prof(request,id):
+#     form = User_Registration.objects.get(id=id)
+#     prop=Profile_User.objects.get(user_id=id)
+#     prop.delete()
+#     form.delete()
+#     return redirect ("index")
